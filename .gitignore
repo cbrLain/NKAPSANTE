@@ -1,0 +1,6 @@
+backend/db/securasante.db
+backend/db/securasante.db-shm
+backend/db/securasante.db-wal
+backend/node_modules/
+.env
+package-lock.json

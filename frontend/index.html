@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SecuraSanté : Organisme de Sécurité Sociale</title>
+  <meta name="description" content="SI Sécurité Sociale : ENSPY Groupe 4 : 2025/2026"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+  <link rel="stylesheet" href="css/main.css?v=3"/>
+</head>
+<body>
+<div id="app">
+
+<!-- ==========================================
+     LANDING PAGE
+=========================================== -->
+<div id="screen-landing" class="screen">
+  <div class="landing-nav">
+    <div class="landing-logo"><i class="fas fa-leaf"></i> SecuraSanté</div>
+    <button class="btn btn-outline" style="border-color:#fff;color:#fff" onclick="showLogin()">Espace Connecté <i class="fas fa-arrow-right"></i></button>
+  </div>
+  <div class="landing-hero">
+    <div class="hero-text">
+      <div class="hero-badge">Nouvelle plateforme 2026</div>
+      <h1>L'assurance santé repensée pour votre bien-être.</h1>
+      <p>Un portail moderne, transparent et sécurisé pour gérer vos remboursements médicaux, suivre vos prescriptions et consulter des médecins qualifiés.</p>
+      <div class="hero-actions">
+        <button class="btn btn-lg" style="background:#fff;color:#667eea;font-weight:700;border:none" onclick="showLogin()">Accéder au portail sécurisé</button>
+      </div>
+    </div>
+  </div>
+  <div class="landing-features">
+    <div class="feat">
+      <div class="feat-icon"><i class="fas fa-bolt"></i></div>
+      <h3>Remboursements rapides</h3>
+      <p>Traitez vos feuilles de maladie en quelques clics et suivez l'état de vos remboursements en temps réel.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"><i class="fas fa-stethoscope"></i></div>
+      <h3>Réseau d'experts</h3>
+      <p>Trouvez rapidement des médecins généralistes ou spécialistes approuvés par notre réseau santé.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"><i class="fas fa-shield-alt"></i></div>
+      <h3>Données sécurisées</h3>
+      <p>Vos informations médicales et personnelles sont stockées dans un environnement hautement sécurisé.</p>
+    </div>
+  </div>
+</div>
+
+  <!-- ══ ÉCRAN DE CONNEXION ══════════════════════════════════ -->
+  <div id="screen-login" class="screen hidden">
+    <div style="position:absolute;top:20px;left:30px;">
+      <button class="btn btn-secondary" onclick="showLanding()"><i class="fas fa-arrow-left"></i> Retour à l'accueil</button>
+    </div>
+    <div class="login-card">
+      <div class="login-logo">
+        <i class="fas fa-hospital-alt logo-icon"></i>
+        <h1 class="logo-title">SecuraSanté</h1>
+        <p class="logo-sub">Organisme de Sécurité Sociale · ENSPY 2025/2026</p>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="f-id">Identifiant</label>
+          <input id="f-id" type="text" placeholder="ex: assureur01" autocomplete="username"/>
+        </div>
+        <div class="form-group">
+          <label for="f-pw">Mot de passe</label>
+          <input id="f-pw" type="password" placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <div id="login-err" class="alert alert-error hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full" id="btn-login">
+          <span class="btn-text">Se connecter</span>
+          <i class="fas fa-spinner btn-spinner hidden" style="animation: spin 1s linear infinite"></i>
+        </button>
+      </form>
+      <div class="demo-section">
+        <p style="color:var(--text-muted);font-size:.82rem;margin-bottom:10px">Comptes de démonstration :</p>
+        <div class="demo-chips">
+          <button class="demo-chip" onclick="demo('assureur01','assureur123')"><i class="fas fa-user-cog"></i> Assureur</button>
+          <button class="demo-chip" onclick="demo('medecin01','medecin123')"><i class="fas fa-user-md"></i> Médecin</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ APPLICATION PRINCIPALE ════════════════════════════ -->
+  <div id="screen-app" class="screen hidden">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-head">
+        <i class="fas fa-hospital s-logo"></i>
+        <div class="s-brand">
+          <div class="s-title">SecuraSanté</div>
+          <div class="s-sub" id="s-role">—</div>
+        </div>
+        <button id="btn-collapse" class="btn-collapse" title="Réduire"><i class="fas fa-chevron-left"></i></button>
+      </div>
+      <nav id="sidebar-nav" class="s-nav">
+        <div class="s-label">Principal</div>
+        <a class="s-item active" data-page="dashboard">
+          <i class="fas fa-th-large s-icon"></i><span class="s-text">Tableau de bord</span>
+        </a>
+        <div id="nav-assureur" class="hidden">
+          <div class="s-label">Gestion</div>
+          <a class="s-item" data-page="assures"><i class="fas fa-users s-icon"></i><span class="s-text">Assurés</span></a>
+          <a class="s-item" data-page="medecins"><i class="fas fa-user-md s-icon"></i><span class="s-text">Médecins</span></a>
+          <div class="s-label">Remboursements</div>
+          <a class="s-item" data-page="feuilles"><i class="fas fa-file-medical-alt s-icon"></i><span class="s-text">Feuilles de maladie</span></a>
+          <a class="s-item" data-page="remboursements"><i class="fas fa-credit-card s-icon"></i><span class="s-text">Remboursements</span></a>
+        </div>
+        <div id="nav-medecin" class="hidden">
+          <div class="s-label">Mes dossiers</div>
+          <a class="s-item" data-page="mes-feuilles"><i class="fas fa-file-invoice s-icon"></i><span class="s-text">Feuilles de maladie</span></a>
+          <div class="s-label">Prescriptions</div>
+          <a class="s-item" data-page="prescriptions-med"><i class="fas fa-prescription-bottle-alt s-icon"></i><span class="s-text">Médicaments</span></a>
+          <a class="s-item" data-page="consultations-spec"><i class="fas fa-microscope s-icon"></i><span class="s-text">Consultations Spéc.</span></a>
+        </div>
+      </nav>
+      <div class="s-foot">
+        <div class="s-avatar" id="s-avatar">?</div>
+        <div class="s-user">
+          <div id="s-uname">—</div>
+          <div id="s-urole" class="s-urole">—</div>
+        </div>
+        <button id="btn-logout" class="btn-logout" title="Déconnexion"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-l" style="display:flex;align-items:center;gap:10px">
+          <button id="btn-menu" class="btn-menu" style="display:none;background:none;font-size:22px;padding:4px"><i class="fas fa-bars"></i></button>
+          <h2 id="page-title" class="page-title">Tableau de bord</h2>
+        </div>
+        <div class="topbar-r">
+          <span id="top-date" class="top-date"></span>
+        </div>
+      </header>
+
+      <div class="page-wrap">
+
+        <!-- DASHBOARD -->
+        <section id="page-dashboard" class="page active">
+          <div id="stats-grid" class="stats-grid"></div>
+          <div class="two-col">
+            <div class="card">
+              <div class="card-hd"><h3>Activité récente</h3></div>
+              <div class="card-bd" id="activity-list"></div>
+            </div>
+            <div class="card">
+              <div class="card-hd"><h3>Statut des dossiers</h3></div>
+              <div class="card-bd"><canvas id="chart-statut" height="200"></canvas></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ASSURÉS -->
+        <section id="page-assures" class="page">
+          <div class="page-bar">
+            <div style="position:relative;flex:1;min-width:200px">
+              <i class="fas fa-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px"></i>
+              <input class="search" id="q-assures" placeholder="Rechercher un assuré…" style="padding-left:32px"/>
+            </div>
+            <button class="btn btn-primary" id="btn-add-assure"><i class="fas fa-plus"></i> Inscrire un assuré</button>
+          </div>
+          <div class="card">
+            <div class="card-bd p0">
+              <table class="tbl" id="tbl-assures">
+                <thead><tr><th>N° Sécurité Sociale</th><th>Nom complet</th><th>Naissance</th><th>Médecin traitant</th><th>Statut</th><th>Actions</th></tr></thead>
+                <tbody id="tbody-assures"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- MÉDECINS -->
+        <section id="page-medecins" class="page">
+          <div class="page-bar">
+            <div style="position:relative;flex:1;min-width:200px">
+              <i class="fas fa-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px"></i>
+              <input class="search" id="q-medecins" placeholder="Rechercher un médecin…" style="padding-left:32px"/>
+            </div>
+            <button class="btn btn-primary" id="btn-add-medecin"><i class="fas fa-plus"></i> Enregistrer un médecin</button>
+          </div>
+          <div class="card">
+            <div class="card-bd p0">
+              <table class="tbl" id="tbl-medecins">
+                <thead><tr><th>ID</th><th>Nom complet</th><th>Type</th><th>Spécialité</th><th>Téléphone</th><th>Actions</th></tr></thead>
+                <tbody id="tbody-medecins"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- FEUILLES -->
+        <section id="page-feuilles" class="page">
+          <div class="page-bar">
+            <div style="position:relative;flex:1;min-width:200px">
+              <i class="fas fa-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px"></i>
+              <input class="search" id="q-feuilles" placeholder="Référence, assuré, médecin…" style="padding-left:32px"/>
+            </div>
+            <div class="filter-tabs" id="ft-feuilles">
+              <button class="ftab active" data-v="all">Toutes</button>
+              <button class="ftab" data-v="En cours de traitement">En cours</button>
+              <button class="ftab" data-v="Incomplète">Incomplètes</button>
+              <button class="ftab" data-v="Validée">Validées</button>
+              <button class="ftab" data-v="Remboursée">Remboursées</button>
+              <button class="ftab" data-v="Refusée">Refusées</button>
+            </div>
+          </div>
+          <div class="card"><div class="card-bd p0">
+            <table class="tbl">
+              <thead><tr><th>Référence</th><th>Assuré</th><th>Médecin</th><th>Date</th><th>Statut</th><th>Montant</th><th>Actions</th></tr></thead>
+              <tbody id="tbody-feuilles"></tbody>
+            </table>
+          </div></div>
+        </section>
+
+        <!-- REMBOURSEMENTS -->
+        <section id="page-remboursements" class="page">
+          <div class="page-bar">
+            <div style="position:relative;flex:1;min-width:200px">
+              <i class="fas fa-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px"></i>
+              <input class="search" id="q-remb" placeholder="Référence, assuré…" style="padding-left:32px"/>
+            </div>
+          </div>
+          <div class="card"><div class="card-bd p0">
+            <table class="tbl">
+              <thead><tr><th>Référence feuille</th><th>Assuré</th><th>Montant</th><th>Mode</th><th>Date</th><th>Assureur</th><th>Actions</th></tr></thead>
+              <tbody id="tbody-remb"></tbody>
+            </table>
+          </div></div>
+        </section>
+
+        <!-- MES FEUILLES -->
+        <section id="page-mes-feuilles" class="page">
+          <div class="page-bar">
+            <div style="position:relative;flex:1;min-width:200px">
+              <i class="fas fa-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px"></i>
+              <input class="search" id="q-mfeuilles" placeholder="Référence, N° assuré…" style="padding-left:32px"/>
+            </div>
+            <button class="btn btn-primary" id="btn-add-feuille"><i class="fas fa-plus"></i> Nouvelle feuille</button>
+          </div>
+          <div class="card"><div class="card-bd p0">
+            <table class="tbl">
+              <thead><tr><th>Référence</th><th>N° SS Assuré</th><th>Date</th><th>Diagnostic</th><th>Statut</th><th>Actions</th></tr></thead>
+              <tbody id="tbody-mfeuilles"></tbody>
+            </table>
+          </div></div>
+        </section>
+
+        <!-- PRESCRIPTIONS MED -->
+        <section id="page-prescriptions-med" class="page">
+          <div class="page-bar">
+            <div style="position:relative;flex:1;min-width:200px">
+              <i class="fas fa-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px"></i>
+              <input class="search" id="q-presc" placeholder="Patient, N° SS…" style="padding-left:32px"/>
+            </div>
+            <button class="btn btn-primary" id="btn-add-presc"><i class="fas fa-plus"></i> Prescrire médicaments</button>
+          </div>
+          <div class="card"><div class="card-bd p0">
+            <table class="tbl">
+              <thead><tr><th>ID</th><th>Patient</th><th>Médicaments</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="tbody-presc"></tbody>
+            </table>
+          </div></div>
+        </section>
+
+        <!-- CONSULTATIONS SPEC -->
+        <section id="page-consultations-spec" class="page">
+          <div class="page-bar">
+            <div style="position:relative;flex:1;min-width:200px">
+              <i class="fas fa-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px"></i>
+              <input class="search" id="q-consult" placeholder="Patient, spécialité…" style="padding-left:32px"/>
+            </div>
+            <button class="btn btn-primary" id="btn-add-consult"><i class="fas fa-plus"></i> Prescrire une consultation</button>
+          </div>
+          <div class="card"><div class="card-bd p0">
+            <table class="tbl">
+              <thead><tr><th>ID</th><th>Patient</th><th>Spécialité</th><th>Urgence</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="tbody-consult"></tbody>
+            </table>
+          </div></div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal-overlay hidden">
+    <div class="modal-box" id="modal-box">
+      <div class="modal-hd">
+        <h3 id="modal-title">—</h3>
+        <button id="modal-close" class="modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-bd" id="modal-bd"></div>
+      <div class="modal-ft" id="modal-ft"></div>
+    </div>
+  </div>
+
+  <!-- TOASTS -->
+  <div id="toasts"></div>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/pages/dashboard.js"></script>
+<script src="js/pages/assures.js"></script>
+<script src="js/pages/medecins.js"></script>
+<script src="js/pages/feuilles.js"></script>
+<script src="js/pages/remboursements.js"></script>
+<script src="js/pages/prescriptions.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

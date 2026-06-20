@@ -1,0 +1,75 @@
+// routes/medecins.js
+const router = require('express').Router();
+const { getDb } = require('../db/database');
+const { authenticate, requireRole } = require('../middleware/auth');
+
+const MED_SELECT = `
+  SELECT m.id, m.identifiant, m.type, m.specialite,
+         p.nom, p.prenom, p.telephone, p.email, p.adresse, p.date_naissance
+  FROM medecins m
+  JOIN personnes p ON p.id = m.personne_id
+`;
+
+// GET /api/medecins
+router.get('/', authenticate, (req, res) => {
+  const db = getDb();
+  const { q, type } = req.query;
+  let sql = MED_SELECT + ' WHERE 1=1';
+  const params = [];
+  if (type) { sql += ' AND m.type = ?'; params.push(type); }
+  if (q) {
+    sql += ' AND (p.nom LIKE ? OR p.prenom LIKE ? OR m.identifiant LIKE ? OR m.specialite LIKE ?)';
+    const like = `%${q}%`;
+    params.push(like, like, like, like);
+  }
+  sql += ' ORDER BY p.nom';
+  res.json(db.prepare(sql).all(...params));
+});
+
+// GET /api/medecins/:id
+router.get('/:id', authenticate, (req, res) => {
+  const db  = getDb();
+  const row = db.prepare(`${MED_SELECT} WHERE m.id = ?`).get(req.params.id);
+  if (!row) return res.status(404).json({ error: 'Médecin introuvable.' });
+  res.json(row);
+});
+
+// POST /api/medecins
+router.post('/', authenticate, requireRole('assureur'), (req, res) => {
+  const db = getDb();
+  const { nom, prenom, date_naissance, telephone, email, adresse, identifiant, type, specialite } = req.body;
+  if (!nom || !prenom || !identifiant || !type)
+    return res.status(400).json({ error: 'Nom, prénom, identifiant et type requis.' });
+  if (!['generaliste','specialiste'].includes(type))
+    return res.status(400).json({ error: 'Type invalide (generaliste | specialiste).' });
+  if (type === 'specialiste' && !specialite)
+    return res.status(400).json({ error: 'Spécialité requise pour un médecin spécialiste.' });
+
+  const exists = db.prepare('SELECT id FROM medecins WHERE identifiant=?').get(identifiant);
+  if (exists) return res.status(409).json({ error: 'Cet identifiant médecin existe déjà.' });
+
+  const pInfo = db.prepare(
+    'INSERT INTO personnes (nom,prenom,date_naissance,adresse,telephone,email) VALUES (?,?,?,?,?,?)'
+  ).run(nom.toUpperCase(), prenom, date_naissance || null, adresse || null, telephone || null, email || null);
+
+  const mInfo = db.prepare(
+    'INSERT INTO medecins (personne_id,identifiant,type,specialite) VALUES (?,?,?,?)'
+  ).run(pInfo.lastInsertRowid, identifiant, type, specialite || null);
+
+  res.status(201).json({ id: mInfo.lastInsertRowid, message: 'Médecin enregistré avec succès.' });
+});
+
+// PUT /api/medecins/:id
+router.put('/:id', authenticate, requireRole('assureur'), (req, res) => {
+  const db = getDb();
+  const med = db.prepare('SELECT * FROM medecins WHERE id=?').get(req.params.id);
+  if (!med) return res.status(404).json({ error: 'Médecin introuvable.' });
+  const { nom, prenom, telephone, email, adresse, specialite } = req.body;
+  db.prepare('UPDATE personnes SET nom=?,prenom=?,telephone=?,email=?,adresse=? WHERE id=?')
+    .run(nom?.toUpperCase(), prenom, telephone, email, adresse, med.personne_id);
+  if (specialite !== undefined)
+    db.prepare('UPDATE medecins SET specialite=? WHERE id=?').run(specialite, req.params.id);
+  res.json({ message: 'Médecin mis à jour.' });
+});
+
+module.exports = router;
