@@ -5,13 +5,13 @@ const jwt     = require('jsonwebtoken');
 const { getDb } = require('../db/database');
 
 // POST /api/auth/login
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const { identifiant, mot_de_passe } = req.body;
   if (!identifiant || !mot_de_passe)
     return res.status(400).json({ error: 'Identifiant et mot de passe requis.' });
 
   const db   = getDb();
-  const user = db.prepare('SELECT * FROM utilisateurs WHERE identifiant = ?').get(identifiant);
+  const user = await db.prepare('SELECT * FROM utilisateurs WHERE identifiant = ?').get(identifiant);
   if (!user || !bcrypt.compareSync(mot_de_passe, user.mot_de_passe))
     return res.status(401).json({ error: 'Identifiant ou mot de passe incorrect.' });
 

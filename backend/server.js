@@ -1,5 +1,6 @@
 // server.js — Point d'entrée du backend SecuraSanté
 require('dotenv').config();
+require('express-async-errors');
 const express = require('express');
 const http    = require('http');
 const cors    = require('cors');
@@ -16,29 +17,36 @@ app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ── Démarrage asynchrone (sql.js nécessite init WASM) ──────────
+// ── Démarrage asynchrone ───────────────────────────────────────
 async function start() {
   const { initDb, getDb } = require('./db/database');
   await initDb();
   const db = getDb();
 
-  // Auto-seed si la base est vide
-  const row = db.prepare('SELECT COUNT(*) AS n FROM utilisateurs').get();
-  if (!row || row.n === 0) {
-    console.log('📦 Base vide — exécution du seed...');
-    require('./db/seed');
-  } else {
-    console.log(`✅ Base prête — ${row.n} utilisateur(s) trouvé(s)`);
+  // Seed si base vide (sql.js local uniquement)
+  if (!process.env.DATABASE_URL) {
+    const row = db.prepare('SELECT COUNT(*) AS n FROM utilisateurs').get();
+    if (!row || row.n === 0) {
+      console.log('📦 Base vide — exécution du seed...');
+      require('./db/seed');
+    } else {
+      console.log(`✅ Base prête — ${row.n} utilisateur(s) trouvé(s)`);
+    }
   }
 
   // ── Socket.IO (temps réel) ────────────────────────────────────
   initSocket(server);
 
-  // Sauvegarde périodique (sql.js est en mémoire)
-  setInterval(() => { try { db.save(); } catch(e) { /* ignore */ } }, 30000);
-  process.on('exit', () => db.save());
-  process.on('SIGINT', () => { db.save(); process.exit(); });
-  process.on('SIGTERM', () => { db.save(); process.exit(); });
+  // Sauvegarde périodique (sql.js uniquement)
+  if (!process.env.DATABASE_URL) {
+    setInterval(() => { try { db.save(); } catch(e) { /* ignore */ } }, 30000);
+    process.on('exit', () => db.save());
+    process.on('SIGINT', () => { db.save(); process.exit(); });
+    process.on('SIGTERM', () => { db.save(); process.exit(); });
+  } else {
+    process.on('SIGINT', () => { db.close?.(); process.exit(); });
+    process.on('SIGTERM', () => { db.close?.(); process.exit(); });
+  }
 
   // ── Routes API ───────────────────────────────────────────────
   app.use('/api/auth',           require('./routes/auth'));

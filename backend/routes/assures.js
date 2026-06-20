@@ -16,53 +16,53 @@ const ASSURE_SELECT = `
 `;
 
 // GET /api/assures
-router.get('/', authenticate, (req, res) => {
+router.get('/', authenticate, async (req, res) => {
   const db = getDb();
   const { q } = req.query;
   let rows;
   if (q) {
     const like = `%${q}%`;
-    rows = db.prepare(`${ASSURE_SELECT}
+    rows = await db.prepare(`${ASSURE_SELECT}
       WHERE a.actif=1 AND (a.numero_ss LIKE ? OR p.nom LIKE ? OR p.prenom LIKE ?)
       ORDER BY p.nom`).all(like, like, like);
   } else {
-    rows = db.prepare(`${ASSURE_SELECT} WHERE a.actif=1 ORDER BY p.nom`).all();
+    rows = await db.prepare(`${ASSURE_SELECT} WHERE a.actif=1 ORDER BY p.nom`).all();
   }
   res.json(rows);
 });
 
 // GET /api/assures/:id
-router.get('/:id', authenticate, (req, res) => {
+router.get('/:id', authenticate, async (req, res) => {
   const db = getDb();
-  const row = db.prepare(`${ASSURE_SELECT} WHERE a.id = ?`).get(req.params.id);
+  const row = await db.prepare(`${ASSURE_SELECT} WHERE a.id = ?`).get(req.params.id);
   if (!row) return res.status(404).json({ error: 'Assuré introuvable.' });
   res.json(row);
 });
 
 // POST /api/assures — Inscrire un assuré
-router.post('/', authenticate, requireRole('assureur'), (req, res) => {
+router.post('/', authenticate, requireRole('assureur'), async (req, res) => {
   const db = getDb();
   const { nom, prenom, date_naissance, adresse, telephone, email, medecin_traitant_id } = req.body;
   if (!nom || !prenom)
     return res.status(400).json({ error: 'Nom et prénom requis.' });
 
   // Auto-génération du N° SS
-  const last = db.prepare("SELECT numero_ss FROM assures WHERE numero_ss LIKE 'SS-%' ORDER BY id DESC LIMIT 1").get();
+  const last = await db.prepare("SELECT numero_ss FROM assures WHERE numero_ss LIKE 'SS-%' ORDER BY id DESC LIMIT 1").get();
   const nextNum = last ? parseInt(last.numero_ss.split('-')[1]) + 1 : 1;
   const numero_ss = 'SS-' + String(nextNum).padStart(6, '0');
 
   // Si medecin_traitant_id fourni, vérif qu'il est généraliste
   if (medecin_traitant_id) {
-    const med = db.prepare("SELECT type FROM medecins WHERE id = ?").get(medecin_traitant_id);
+    const med = await db.prepare("SELECT type FROM medecins WHERE id = ?").get(medecin_traitant_id);
     if (!med) return res.status(400).json({ error: 'Médecin introuvable.' });
     if (med.type !== 'generaliste') return res.status(400).json({ error: 'Le médecin traitant doit être généraliste.' });
   }
 
-  const pInfo = db.prepare(
+  const pInfo = await db.prepare(
     'INSERT INTO personnes (nom,prenom,date_naissance,adresse,telephone,email) VALUES (?,?,?,?,?,?)'
   ).run(nom.toUpperCase(), prenom, date_naissance || null, adresse || null, telephone || null, email || null);
 
-  const aInfo = db.prepare(
+  const aInfo = await db.prepare(
     'INSERT INTO assures (personne_id,numero_ss,medecin_traitant_id) VALUES (?,?,?)'
   ).run(pInfo.lastInsertRowid, numero_ss, medecin_traitant_id || null);
 
@@ -71,26 +71,26 @@ router.post('/', authenticate, requireRole('assureur'), (req, res) => {
 });
 
 // PUT /api/assures/:id — Mettre à jour
-router.put('/:id', authenticate, requireRole('assureur'), (req, res) => {
+router.put('/:id', authenticate, requireRole('assureur'), async (req, res) => {
   const db = getDb();
-  const assure = db.prepare('SELECT * FROM assures WHERE id = ?').get(req.params.id);
+  const assure = await db.prepare('SELECT * FROM assures WHERE id = ?').get(req.params.id);
   if (!assure) return res.status(404).json({ error: 'Assuré introuvable.' });
 
   const { nom, prenom, date_naissance, adresse, telephone, email, medecin_traitant_id } = req.body;
 
   if (medecin_traitant_id) {
-    const med = db.prepare("SELECT type FROM medecins WHERE id = ?").get(medecin_traitant_id);
+    const med = await db.prepare("SELECT type FROM medecins WHERE id = ?").get(medecin_traitant_id);
     if (!med || med.type !== 'generaliste')
       return res.status(400).json({ error: 'Le médecin traitant doit être généraliste.' });
   }
 
-  db.prepare(`UPDATE personnes SET nom=?, prenom=?, date_naissance=?, adresse=?, telephone=?, email=?
+  await db.prepare(`UPDATE personnes SET nom=?, prenom=?, date_naissance=?, adresse=?, telephone=?, email=?
     WHERE id = ?`).run(
     nom?.toUpperCase() || undefined, prenom, date_naissance, adresse, telephone, email, assure.personne_id
   );
 
   if (medecin_traitant_id !== undefined) {
-    db.prepare('UPDATE assures SET medecin_traitant_id=? WHERE id=?').run(medecin_traitant_id, req.params.id);
+    await db.prepare('UPDATE assures SET medecin_traitant_id=? WHERE id=?').run(medecin_traitant_id, req.params.id);
   }
 
   broadcast('data-change', { resource: 'assures' });
@@ -98,45 +98,40 @@ router.put('/:id', authenticate, requireRole('assureur'), (req, res) => {
 });
 
 // PATCH /api/assures/:id/medecin-traitant — Enregistrer médecin traitant
-router.patch('/:id/medecin-traitant', authenticate, requireRole('assureur'), (req, res) => {
+router.patch('/:id/medecin-traitant', authenticate, requireRole('assureur'), async (req, res) => {
   const db = getDb();
   const { medecin_traitant_id } = req.body;
   if (!medecin_traitant_id) return res.status(400).json({ error: 'ID médecin requis.' });
 
-  const assure = db.prepare('SELECT * FROM assures WHERE id = ?').get(req.params.id);
+  const assure = await db.prepare('SELECT * FROM assures WHERE id = ?').get(req.params.id);
   if (!assure) return res.status(404).json({ error: 'Assuré introuvable.' });
 
-  const med = db.prepare('SELECT * FROM medecins WHERE id = ?').get(medecin_traitant_id);
+  const med = await db.prepare('SELECT * FROM medecins WHERE id = ?').get(medecin_traitant_id);
   if (!med) return res.status(404).json({ error: 'Médecin introuvable.' });
   if (med.type !== 'generaliste') return res.status(400).json({ error: 'Le médecin traitant doit être un généraliste.' });
 
-  db.prepare('UPDATE assures SET medecin_traitant_id=? WHERE id=?').run(medecin_traitant_id, req.params.id);
+  await db.prepare('UPDATE assures SET medecin_traitant_id=? WHERE id=?').run(medecin_traitant_id, req.params.id);
   broadcast('data-change', { resource: 'assures' });
   res.json({ message: 'Médecin traitant enregistré avec succès.' });
 });
 
 // DELETE /api/assures/:id — Suppression complète avec toutes les données liées
-router.delete('/:id', authenticate, requireRole('assureur'), (req, res) => {
+router.delete('/:id', authenticate, requireRole('assureur'), async (req, res) => {
   const db = getDb();
-  const assure = db.prepare('SELECT personne_id FROM assures WHERE id=?').get(req.params.id);
+  const assure = await db.prepare('SELECT personne_id FROM assures WHERE id=?').get(req.params.id);
   if (!assure) return res.status(404).json({ error: 'Assuré introuvable.' });
 
-  const del = db.transaction(() => {
-    // Supprimer remboursements liés aux feuilles de l'assuré
-    db.prepare(`DELETE FROM remboursements WHERE feuille_id IN (SELECT id FROM feuilles_maladie WHERE assure_id=?)`).run(req.params.id);
-    // Supprimer lignes de prescription + consultations liées
-    db.prepare(`DELETE FROM prescription_medicaments WHERE prescription_id IN (SELECT id FROM prescriptions WHERE assure_id=?)`).run(req.params.id);
-    db.prepare(`DELETE FROM prescription_consultation WHERE prescription_id IN (SELECT id FROM prescriptions WHERE assure_id=?)`).run(req.params.id);
-    // Supprimer prescriptions
-    db.prepare(`DELETE FROM prescriptions WHERE assure_id=?`).run(req.params.id);
-    // Supprimer feuilles de maladie
-    db.prepare(`DELETE FROM feuilles_maladie WHERE assure_id=?`).run(req.params.id);
-    // Supprimer l'assuré
-    db.prepare(`DELETE FROM assures WHERE id=?`).run(req.params.id);
-    // Supprimer la personne
-    db.prepare(`DELETE FROM personnes WHERE id=?`).run(assure.personne_id);
+  const del = db.transaction(async () => {
+    await db.prepare(`DELETE FROM remboursements WHERE feuille_id IN (SELECT id FROM feuilles_maladie WHERE assure_id=?)`).run(req.params.id);
+    await db.prepare(`DELETE FROM prescription_medicaments WHERE prescription_id IN (SELECT id FROM prescriptions WHERE assure_id=?)`).run(req.params.id);
+    await db.prepare(`DELETE FROM prescription_consultation WHERE prescription_id IN (SELECT id FROM prescriptions WHERE assure_id=?)`).run(req.params.id);
+    await db.prepare(`DELETE FROM prescriptions WHERE assure_id=?`).run(req.params.id);
+    await db.prepare(`DELETE FROM feuilles_maladie WHERE assure_id=?`).run(req.params.id);
+    await db.prepare(`DELETE FROM assures WHERE id=?`).run(req.params.id);
+    await db.prepare(`DELETE FROM personnes WHERE id=?`).run(assure.personne_id);
   });
-  del();
+  await del();
+
   broadcast('data-change', { resource: 'assures' });
   res.json({ message: 'Assuré et toutes ses données supprimés.' });
 });
