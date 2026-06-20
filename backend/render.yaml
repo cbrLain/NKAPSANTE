@@ -2,5 +2,5 @@ services:
   - type: web
     name: securasante
     env: node
-    buildCommand: npm install && node db/seed.js
+    buildCommand: npm install
     startCommand: node server.js

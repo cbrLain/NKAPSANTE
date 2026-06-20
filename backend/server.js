@@ -13,7 +13,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ── Init DB (crée tables si absentes) ─────────────────────────
-require('./db/database').getDb();
+const db = require('./db/database').getDb();
+
+// Auto-seed si la base est vide
+const nbUsers = db.prepare('SELECT COUNT(*) AS n FROM utilisateurs').get().n;
+if (nbUsers === 0) {
+  console.log('📦 Base vide — exécution du seed...');
+  require('./db/seed');
+} else {
+  console.log(`✅ Base prête — ${nbUsers} utilisateur(s) trouvé(s)`);
+}
 
 // ── Routes API ─────────────────────────────────────────────────
 app.use('/api/auth',           require('./routes/auth'));
