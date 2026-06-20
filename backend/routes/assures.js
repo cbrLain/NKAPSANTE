@@ -22,10 +22,10 @@ router.get('/', authenticate, (req, res) => {
   if (q) {
     const like = `%${q}%`;
     rows = db.prepare(`${ASSURE_SELECT}
-      WHERE a.numero_ss LIKE ? OR p.nom LIKE ? OR p.prenom LIKE ?
+      WHERE a.actif=1 AND (a.numero_ss LIKE ? OR p.nom LIKE ? OR p.prenom LIKE ?)
       ORDER BY p.nom`).all(like, like, like);
   } else {
-    rows = db.prepare(`${ASSURE_SELECT} ORDER BY p.nom`).all();
+    rows = db.prepare(`${ASSURE_SELECT} WHERE a.actif=1 ORDER BY p.nom`).all();
   }
   res.json(rows);
 });
