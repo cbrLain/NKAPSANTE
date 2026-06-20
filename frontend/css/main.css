@@ -92,6 +92,14 @@ ul{list-style:none}
 .feat h3{font-size:1.05rem;font-weight:600;margin-bottom:8px}
 .feat p{font-size:.85rem;opacity:.8;line-height:1.5}
 
+/* Section contact */
+.l-contact{text-align:center;padding:60px 40px}
+.l-contact .l-section-desc{margin-bottom:24px}
+.contact-card{display:inline-flex;align-items:center;gap:14px;background:rgba(255,255,255,.1);padding:16px 32px;border-radius:10px;border:1px solid rgba(255,255,255,.12)}
+.contact-card i{font-size:24px;color:#fff}
+.contact-card a{color:#fff;font-size:1.05rem;font-weight:600;text-decoration:none}
+.contact-card a:hover{text-decoration:underline}
+
 /* Section CTA */
 .l-cta{text-align:center;padding:60px 40px}
 .l-cta h2{font-size:1.8rem;font-weight:700;color:#fff;margin-bottom:14px}
