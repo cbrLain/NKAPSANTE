@@ -51,6 +51,13 @@ function demo(id, pw) {
   document.getElementById('f-pw').value = pw;
 }
 
+function setRole(role) {
+  document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.rtab[data-role="${role}"]`).classList.add('active');
+  const creds = { assureur: ['assureur01','assureur123'], medecin: ['medecin01','medecin123'] };
+  demo(creds[role][0], creds[role][1]);
+}
+
 // ── Déconnexion ───────────────────────────────────────────────
 document.getElementById('btn-logout').onclick = () => {
   localStorage.removeItem('ss_token');
@@ -72,7 +79,7 @@ function showApp(user) {
   document.getElementById('s-avatar').textContent  = initials;
   document.getElementById('s-uname').textContent   = `${user.prenom} ${user.nom}`;
   document.getElementById('s-role').innerHTML      = user.role === 'assureur' ? '<i class="fas fa-user-cog"></i> Assureur' : '<i class="fas fa-stethoscope"></i> Médecin';
-  document.getElementById('s-urole').textContent   = user.role === 'assureur' ? 'Agent de sécurité sociale' : 'Professionnel de santé';
+  document.getElementById('s-urole').textContent   = user.role === 'assureur' ? 'Agent NKAPSANTÉ' : 'Professionnel de santé';
 
   // Navigation selon rôle
   if (user.role === 'assureur') {

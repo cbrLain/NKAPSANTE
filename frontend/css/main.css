@@ -78,10 +78,11 @@ ul{list-style:none}
 .logo-icon{font-size:48px;color:var(--primary);margin-bottom:8px}
 .logo-title{font-size:1.8rem;font-weight:700;color:var(--text)}
 .logo-sub{color:var(--text-muted);font-size:.85rem;margin-top:4px}
-.demo-section{margin-top:20px;text-align:center;padding-top:16px;border-top:1px solid var(--border)}
-.demo-chips{display:flex;justify-content:center;gap:10px;margin-top:8px}
-.demo-chip{padding:7px 14px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--text-muted);font-size:.8rem;display:flex;align-items:center;gap:5px}
-.demo-chip:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.role-tabs{display:flex;gap:0;margin-bottom:16px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
+.rtab{flex:1;padding:10px;text-align:center;font-size:.85rem;font-weight:600;background:#fff;color:var(--text-muted);border:none;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;gap:6px}
+.rtab:not(:last-child){border-right:1px solid var(--border)}
+.rtab.active{background:var(--primary);color:#fff}
+.rtab:hover:not(.active){background:var(--bg)}
 
 /* ── FORMS ────────────────────────────────────────────── */
 .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}

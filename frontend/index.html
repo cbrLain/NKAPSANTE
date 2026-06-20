@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SecuraSanté : Organisme de Sécurité Sociale</title>
-  <meta name="description" content="SI Sécurité Sociale : ENSPY Groupe 4 : 2025/2026"/>
+  <title>NKAPSANTÉ : Sécurité Sociale</title>
+  <meta name="description" content="NKAPSANTÉ - Votre sécurité sociale au Cameroun"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
   <link rel="stylesheet" href="css/main.css?v=3"/>
 </head>
@@ -16,34 +16,34 @@
 =========================================== -->
 <div id="screen-landing" class="screen">
   <div class="landing-nav">
-    <div class="landing-logo"><i class="fas fa-leaf"></i> SecuraSanté</div>
+    <div class="landing-logo"><i class="fas fa-shield-alt"></i> NKAPSANTÉ</div>
     <button class="btn btn-outline" style="border-color:#fff;color:#fff" onclick="showLogin()">Espace Connecté <i class="fas fa-arrow-right"></i></button>
   </div>
   <div class="landing-hero">
     <div class="hero-text">
-      <div class="hero-badge">Nouvelle plateforme 2026</div>
-      <h1>L'assurance santé repensée pour votre bien-être.</h1>
-      <p>Un portail moderne, transparent et sécurisé pour gérer vos remboursements médicaux, suivre vos prescriptions et consulter des médecins qualifiés.</p>
+      <div class="hero-badge">Organisme de Sécurité Sociale</div>
+      <h1>NKAPSANTÉ : votre santé, notre engagement.</h1>
+      <p>Rejoignez le réseau de sécurité sociale qui protege vous et votre famille. Accedez à des soins de qualite, beneficiez de remboursements rapides et suivez vos dossiers en toute transparence.</p>
       <div class="hero-actions">
-        <button class="btn btn-lg" style="background:#fff;color:#667eea;font-weight:700;border:none" onclick="showLogin()">Accéder au portail sécurisé</button>
+        <button class="btn btn-lg" style="background:#fff;color:#667eea;font-weight:700;border:none" onclick="showLogin()">Devenir assuré <i class="fas fa-arrow-right"></i></button>
       </div>
     </div>
   </div>
   <div class="landing-features">
     <div class="feat">
-      <div class="feat-icon"><i class="fas fa-bolt"></i></div>
-      <h3>Remboursements rapides</h3>
-      <p>Traitez vos feuilles de maladie en quelques clics et suivez l'état de vos remboursements en temps réel.</p>
+      <div class="feat-icon"><i class="fas fa-umbrella"></i></div>
+      <h3>Couverture complete</h3>
+      <p>Une prise en charge medicale etendue pour tous vos soins : consultations, hospitalisations, medicaments et plus encore.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"><i class="fas fa-users"></i></div>
+      <h3>Protegez votre famille</h3>
+      <p>Faites beneficiER a vos proches d'une couverture sociale durable. Un dossier unique pour toute votre famille.</p>
     </div>
     <div class="feat">
       <div class="feat-icon"><i class="fas fa-stethoscope"></i></div>
-      <h3>Réseau d'experts</h3>
-      <p>Trouvez rapidement des médecins généralistes ou spécialistes approuvés par notre réseau santé.</p>
-    </div>
-    <div class="feat">
-      <div class="feat-icon"><i class="fas fa-shield-alt"></i></div>
-      <h3>Données sécurisées</h3>
-      <p>Vos informations médicales et personnelles sont stockées dans un environnement hautement sécurisé.</p>
+      <h3>Reseau de soins</h3>
+      <p>Un vaste reseau de medecins generalistes et specialistes partenaires pour vous offrir les meilleurs soins.</p>
     </div>
   </div>
 </div>
@@ -51,18 +51,22 @@
   <!-- ══ ÉCRAN DE CONNEXION ══════════════════════════════════ -->
   <div id="screen-login" class="screen hidden">
     <div style="position:absolute;top:20px;left:30px;">
-      <button class="btn btn-secondary" onclick="showLanding()"><i class="fas fa-arrow-left"></i> Retour à l'accueil</button>
+      <button class="btn btn-secondary" onclick="showLanding()"><i class="fas fa-arrow-left"></i> NKAPSANTÉ</button>
     </div>
     <div class="login-card">
       <div class="login-logo">
-        <i class="fas fa-hospital-alt logo-icon"></i>
-        <h1 class="logo-title">SecuraSanté</h1>
+        <i class="fas fa-shield-alt logo-icon"></i>
+        <h1 class="logo-title">NKAPSANTÉ</h1>
         <p class="logo-sub">Organisme de Sécurité Sociale · ENSPY 2025/2026</p>
+      </div>
+      <div class="role-tabs">
+        <button class="rtab active" data-role="assureur" onclick="setRole('assureur')"><i class="fas fa-user-cog"></i> Assureur</button>
+        <button class="rtab" data-role="medecin" onclick="setRole('medecin')"><i class="fas fa-user-md"></i> Médecin</button>
       </div>
       <form id="login-form">
         <div class="form-group">
           <label for="f-id">Identifiant</label>
-          <input id="f-id" type="text" placeholder="ex: assureur01" autocomplete="username"/>
+          <input id="f-id" type="text" placeholder="assureur01" autocomplete="username"/>
         </div>
         <div class="form-group">
           <label for="f-pw">Mot de passe</label>
@@ -74,13 +78,6 @@
           <i class="fas fa-spinner btn-spinner hidden" style="animation: spin 1s linear infinite"></i>
         </button>
       </form>
-      <div class="demo-section">
-        <p style="color:var(--text-muted);font-size:.82rem;margin-bottom:10px">Comptes de démonstration :</p>
-        <div class="demo-chips">
-          <button class="demo-chip" onclick="demo('assureur01','assureur123')"><i class="fas fa-user-cog"></i> Assureur</button>
-          <button class="demo-chip" onclick="demo('medecin01','medecin123')"><i class="fas fa-user-md"></i> Médecin</button>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -88,9 +85,9 @@
   <div id="screen-app" class="screen hidden">
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-head">
-        <i class="fas fa-hospital s-logo"></i>
+        <i class="fas fa-shield-alt s-logo"></i>
         <div class="s-brand">
-          <div class="s-title">SecuraSanté</div>
+          <div class="s-title">NKAPSANTÉ</div>
           <div class="s-sub" id="s-role">—</div>
         </div>
         <button id="btn-collapse" class="btn-collapse" title="Réduire"><i class="fas fa-chevron-left"></i></button>

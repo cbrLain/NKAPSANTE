@@ -108,7 +108,7 @@ async function viewFacture(rembId) {
         <span class="prt-amount">${fmtMoney(r.montant)}</span>
       </div>
       <div style="text-align:center;font-size:.7rem;color:var(--text-dim);margin-top:16px">
-        Document généré le ${fmtDateTime(new Date())} · SecuraSanté : ENSPY 2025/2026
+        Document généré le ${fmtDateTime(new Date())} · NKAPSANTÉ : ENSPY 2025/2026
       </div>
     `, `
       <button class="btn btn-secondary" onclick="Modal.close()">Fermer</button>
@@ -121,7 +121,7 @@ function imprimerFacture() {
   const content = document.getElementById('modal-bd').innerHTML;
   const w = window.open('', '_blank');
   w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
-    <title>Facture de Remboursement : SecuraSanté</title>
+    <title>Facture de Remboursement : NKAPSANTÉ</title>
     <style>
       body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fff;color:#111;padding:32px;max-width:680px;margin:auto}
       .prt-title{font-size:1.05rem;font-weight:700;text-align:center;border-bottom:2px solid #28a745;padding-bottom:10px;margin-bottom:18px}
