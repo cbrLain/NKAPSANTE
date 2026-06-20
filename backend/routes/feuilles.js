@@ -2,6 +2,7 @@
 const router = require('express').Router();
 const { getDb } = require('../db/database');
 const { authenticate, requireRole } = require('../middleware/auth');
+const { broadcast } = require('../socket');
 
 // Transitions d'état autorisées (machine à états du PDF)
 const TRANSITIONS = {
@@ -94,6 +95,7 @@ router.post('/', authenticate, requireRole('medecin'), (req, res) => {
     VALUES (?,?,?,?,?,?,'Brouillon',?,?,?)
   `).run(ref, assure_id, med.id, date_consultation, diagnostic, actes_medicaux || null, mont, remb, notes || null);
 
+  broadcast('data-change', { resource: 'feuilles' });
   res.status(201).json({ id: info.lastInsertRowid, reference: ref, message: 'Feuille créée en brouillon.' });
 });
 
@@ -111,6 +113,7 @@ router.patch('/:id/statut', authenticate, (req, res) => {
   db.prepare('UPDATE feuilles_maladie SET statut=?, notes=COALESCE(?,notes), updated_at=CURRENT_TIMESTAMP WHERE id=?')
     .run(statut, notes || null, req.params.id);
 
+  broadcast('data-change', { resource: 'feuilles' });
   res.json({ message: `Statut mis à jour : ${statut}.` });
 });
 
@@ -133,6 +136,7 @@ router.patch('/:id/completer', authenticate, requireRole('assureur'), (req, res)
     updated_at=CURRENT_TIMESTAMP WHERE id=?`)
     .run(parseFloat(montant_remboursement), mode_paiement, notes || null, req.params.id);
 
+  broadcast('data-change', { resource: 'feuilles' });
   res.json({ message: 'Feuille complétée avec succès.' });
 });
 

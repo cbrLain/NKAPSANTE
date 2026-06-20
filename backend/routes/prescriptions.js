@@ -2,6 +2,7 @@
 const router = require('express').Router();
 const { getDb } = require('../db/database');
 const { authenticate, requireRole } = require('../middleware/auth');
+const { broadcast } = require('../socket');
 
 // GET /api/prescriptions
 router.get('/', authenticate, (req, res) => {
@@ -101,6 +102,7 @@ router.post('/medicaments', authenticate, requireRole('medecin'), (req, res) => 
   });
 
   const id = creer();
+  broadcast('data-change', { resource: 'prescriptions' });
   res.status(201).json({ id, message: 'Prescription médicaments enregistrée.' });
 });
 
@@ -139,6 +141,7 @@ router.post('/consultation-specialiste', authenticate, requireRole('medecin'), (
   });
 
   const id = creer();
+  broadcast('data-change', { resource: 'prescriptions' });
   res.status(201).json({ id, message: 'Prescription consultation spécialiste enregistrée.' });
 });
 

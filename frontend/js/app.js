@@ -4,6 +4,12 @@
 let currentUser  = null;
 let currentPage  = 'dashboard';
 
+// ── Socket.IO (temps réel) ────────────────────────────────────
+const socket = io();
+socket.on('data-change', (payload) => {
+  if (currentPage) loadPage(currentPage);
+});
+
 // ── Initialisation ────────────────────────────────────────────
 (function init() {
   // Date dans la topbar

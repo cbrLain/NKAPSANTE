@@ -1,11 +1,15 @@
 // server.js — Point d'entrée du backend SecuraSanté
 require('dotenv').config();
 const express = require('express');
+const http    = require('http');
 const cors    = require('cors');
 const path    = require('path');
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 3001;
+
+const { initSocket } = require('./socket');
 
 // ── Middleware ──────────────────────────────────────────────────
 app.use(cors({ origin: '*' }));
@@ -26,6 +30,9 @@ async function start() {
   } else {
     console.log(`✅ Base prête — ${row.n} utilisateur(s) trouvé(s)`);
   }
+
+  // ── Socket.IO (temps réel) ────────────────────────────────────
+  initSocket(server);
 
   // Sauvegarde périodique (sql.js est en mémoire)
   setInterval(() => { try { db.save(); } catch(e) { /* ignore */ } }, 30000);
@@ -57,7 +64,7 @@ async function start() {
     res.status(500).json({ error: 'Erreur interne du serveur.' });
   });
 
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`\n🏥  SecuraSanté API démarrée sur http://localhost:${PORT}`);
     console.log(`📋  Endpoints disponibles :`);
     console.log(`    POST /api/auth/login`);

@@ -2,6 +2,7 @@
 const router = require('express').Router();
 const { getDb } = require('../db/database');
 const { authenticate, requireRole } = require('../middleware/auth');
+const { broadcast } = require('../socket');
 
 const MED_SELECT = `
   SELECT m.id, m.identifiant, m.type, m.specialite,
@@ -58,6 +59,7 @@ router.post('/', authenticate, requireRole('assureur'), (req, res) => {
     'INSERT INTO medecins (personne_id,identifiant,type,specialite) VALUES (?,?,?,?)'
   ).run(pInfo.lastInsertRowid, identifiant, type, specialite || null);
 
+  broadcast('data-change', { resource: 'medecins' });
   res.status(201).json({ id: mInfo.lastInsertRowid, message: 'Médecin enregistré avec succès.' });
 });
 
@@ -71,6 +73,7 @@ router.put('/:id', authenticate, requireRole('assureur'), (req, res) => {
     .run(nom?.toUpperCase(), prenom, telephone, email, adresse, med.personne_id);
   if (specialite !== undefined)
     db.prepare('UPDATE medecins SET specialite=? WHERE id=?').run(specialite, req.params.id);
+  broadcast('data-change', { resource: 'medecins' });
   res.json({ message: 'Médecin mis à jour.' });
 });
 

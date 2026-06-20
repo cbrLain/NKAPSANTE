@@ -2,6 +2,7 @@
 const router = require('express').Router();
 const { getDb } = require('../db/database');
 const { authenticate, requireRole } = require('../middleware/auth');
+const { broadcast } = require('../socket');
 
 const ASSURE_SELECT = `
   SELECT a.id, a.numero_ss, a.date_inscription, a.actif,
@@ -65,6 +66,7 @@ router.post('/', authenticate, requireRole('assureur'), (req, res) => {
     'INSERT INTO assures (personne_id,numero_ss,medecin_traitant_id) VALUES (?,?,?)'
   ).run(pInfo.lastInsertRowid, numero_ss, medecin_traitant_id || null);
 
+  broadcast('data-change', { resource: 'assures' });
   res.status(201).json({ id: aInfo.lastInsertRowid, numero_ss, message: 'Assuré inscrit avec succès.' });
 });
 
@@ -91,6 +93,7 @@ router.put('/:id', authenticate, requireRole('assureur'), (req, res) => {
     db.prepare('UPDATE assures SET medecin_traitant_id=? WHERE id=?').run(medecin_traitant_id, req.params.id);
   }
 
+  broadcast('data-change', { resource: 'assures' });
   res.json({ message: 'Assuré mis à jour.' });
 });
 
@@ -108,6 +111,7 @@ router.patch('/:id/medecin-traitant', authenticate, requireRole('assureur'), (re
   if (med.type !== 'generaliste') return res.status(400).json({ error: 'Le médecin traitant doit être un généraliste.' });
 
   db.prepare('UPDATE assures SET medecin_traitant_id=? WHERE id=?').run(medecin_traitant_id, req.params.id);
+  broadcast('data-change', { resource: 'assures' });
   res.json({ message: 'Médecin traitant enregistré avec succès.' });
 });
 
@@ -133,6 +137,7 @@ router.delete('/:id', authenticate, requireRole('assureur'), (req, res) => {
     db.prepare(`DELETE FROM personnes WHERE id=?`).run(assure.personne_id);
   });
   del();
+  broadcast('data-change', { resource: 'assures' });
   res.json({ message: 'Assuré et toutes ses données supprimés.' });
 });
 

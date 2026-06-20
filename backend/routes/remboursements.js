@@ -2,6 +2,7 @@
 const router = require('express').Router();
 const { getDb } = require('../db/database');
 const { authenticate, requireRole } = require('../middleware/auth');
+const { broadcast } = require('../socket');
 
 const REMB_SELECT = `
   SELECT r.*, f.reference AS feuille_ref,
@@ -71,6 +72,7 @@ router.post('/', authenticate, requireRole('assureur'), (req, res) => {
   });
 
   const rId = effectuer();
+  broadcast('data-change', { resource: 'remboursements' });
   res.status(201).json({ id: rId, message: 'Remboursement effectué avec succès.' });
 });
 
