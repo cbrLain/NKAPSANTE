@@ -22,6 +22,7 @@ function renderAssures(rows) {
       <td><div class="t-actions">
         <button class="btn btn-sm btn-secondary" onclick="viewAssure(${a.id})"><i class="fas fa-eye"></i> Voir</button>
         <button class="btn btn-sm btn-outline" onclick="editMedecinTraitant(${a.id})"><i class="fas fa-link"></i> Médecin</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteAssure(${a.id})"><i class="fas fa-trash"></i></button>
       </div></td>
     </tr>
   `).join('');
@@ -113,6 +114,15 @@ async function submitMedecinTraitant(assureId) {
     Modal.close(); toast('Médecin traitant enregistré !', 'success');
     loadAssures();
   } catch(e) { err.textContent = e.message; err.classList.remove('hidden'); }
+}
+
+async function deleteAssure(id) {
+  if (!confirm('Supprimer cet assuré ?')) return;
+  try {
+    await Api.deleteAssure(id);
+    toast('Assuré supprimé.', 'success');
+    loadAssures();
+  } catch(e) { toast(e.message, 'error'); }
 }
 
 document.getElementById('btn-add-assure').onclick = showAddAssure;

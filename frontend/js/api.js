@@ -36,6 +36,7 @@ const Api = {
   addAssure:   (d)   => Api.post('/assures', d),
   updateAssure:(id,d)=> Api.put('/assures/' + id, d),
   setMedecinTraitant:(aid,mid)=> Api.patch('/assures/'+aid+'/medecin-traitant',{medecin_traitant_id:mid}),
+  deleteAssure:  (id)  => Api.delete('/assures/' + id),
 
   // Médecins
   getMedecins: (q,type) => Api.get('/medecins?' + new URLSearchParams({...(q&&{q}), ...(type&&{type})})),
