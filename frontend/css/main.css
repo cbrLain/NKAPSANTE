@@ -49,7 +49,7 @@ ul{list-style:none}
 #screen-app:not(.hidden){display:flex}
 
 /* ── LANDING ──────────────────────────────────────────── */
-#screen-landing{display:none;flex-direction:column;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;overflow-y:auto}
+#screen-landing{display:none;flex-direction:column;background:linear-gradient(135deg,rgba(0,0,0,.65),rgba(0,0,0,.45)),url('../img/pexels-ninthgrid-2149521550-30677591.jpg') center/cover fixed;min-height:100vh;overflow-y:auto}
 #screen-landing:not(.hidden){display:flex}
 .landing-nav{display:flex;justify-content:space-between;align-items:center;padding:16px 40px;background:rgba(255,255,255,.1)}
 .landing-logo{font-size:1.4rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
