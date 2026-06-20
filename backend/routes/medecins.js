@@ -37,16 +37,18 @@ router.get('/:id', authenticate, (req, res) => {
 // POST /api/medecins
 router.post('/', authenticate, requireRole('assureur'), (req, res) => {
   const db = getDb();
-  const { nom, prenom, date_naissance, telephone, email, adresse, identifiant, type, specialite } = req.body;
-  if (!nom || !prenom || !identifiant || !type)
-    return res.status(400).json({ error: 'Nom, prénom, identifiant et type requis.' });
+  const { nom, prenom, date_naissance, telephone, email, adresse, type, specialite } = req.body;
+  if (!nom || !prenom || !type)
+    return res.status(400).json({ error: 'Nom, prénom et type requis.' });
   if (!['generaliste','specialiste'].includes(type))
     return res.status(400).json({ error: 'Type invalide (generaliste | specialiste).' });
   if (type === 'specialiste' && !specialite)
     return res.status(400).json({ error: 'Spécialité requise pour un médecin spécialiste.' });
 
-  const exists = db.prepare('SELECT id FROM medecins WHERE identifiant=?').get(identifiant);
-  if (exists) return res.status(409).json({ error: 'Cet identifiant médecin existe déjà.' });
+  // Auto-génération de l'identifiant
+  const last = db.prepare("SELECT identifiant FROM medecins WHERE identifiant LIKE 'MED-%' ORDER BY id DESC LIMIT 1").get();
+  const nextNum = last ? parseInt(last.identifiant.split('-')[1]) + 1 : 1;
+  const identifiant = 'MED-' + String(nextNum).padStart(3, '0');
 
   const pInfo = db.prepare(
     'INSERT INTO personnes (nom,prenom,date_naissance,adresse,telephone,email) VALUES (?,?,?,?,?,?)'

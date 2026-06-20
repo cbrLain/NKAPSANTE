@@ -41,13 +41,14 @@ router.get('/:id', authenticate, (req, res) => {
 // POST /api/assures — Inscrire un assuré
 router.post('/', authenticate, requireRole('assureur'), (req, res) => {
   const db = getDb();
-  const { nom, prenom, date_naissance, adresse, telephone, email, numero_ss, medecin_traitant_id } = req.body;
-  if (!nom || !prenom || !numero_ss)
-    return res.status(400).json({ error: 'Nom, prénom et N° de sécurité sociale requis.' });
+  const { nom, prenom, date_naissance, adresse, telephone, email, medecin_traitant_id } = req.body;
+  if (!nom || !prenom)
+    return res.status(400).json({ error: 'Nom et prénom requis.' });
 
-  // Vérif doublon
-  const exists = db.prepare('SELECT id FROM assures WHERE numero_ss = ?').get(numero_ss);
-  if (exists) return res.status(409).json({ error: 'Un assuré avec ce numéro SS existe déjà.' });
+  // Auto-génération du N° SS
+  const last = db.prepare("SELECT numero_ss FROM assures WHERE numero_ss LIKE 'SS-%' ORDER BY id DESC LIMIT 1").get();
+  const nextNum = last ? parseInt(last.numero_ss.split('-')[1]) + 1 : 1;
+  const numero_ss = 'SS-' + String(nextNum).padStart(6, '0');
 
   // Si medecin_traitant_id fourni, vérif qu'il est généraliste
   if (medecin_traitant_id) {

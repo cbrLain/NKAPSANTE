@@ -30,16 +30,13 @@ function showAddMedecin() {
       <div class="form-group"><label>Nom *</label><input id="m-nom" placeholder="TALLA" style="text-transform:uppercase"/></div>
       <div class="form-group"><label>Prénom *</label><input id="m-prenom" placeholder="Sylvain"/></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Identifiant médecin *</label><input id="m-id" placeholder="MED-007"/></div>
-      <div class="form-group">
-        <label>Type *</label>
-        <select id="m-type" onchange="toggleSpecialite()">
-          <option value="">-- Sélectionner --</option>
-          <option value="generaliste">Généraliste</option>
-          <option value="specialiste">Spécialiste</option>
-        </select>
-      </div>
+    <div class="form-group">
+      <label>Type *</label>
+      <select id="m-type" onchange="toggleSpecialite()">
+        <option value="">-- Sélectionner --</option>
+        <option value="generaliste">Généraliste</option>
+        <option value="specialiste">Spécialiste</option>
+      </select>
     </div>
     <div class="form-group" id="grp-spec" style="display:none">
       <label>Spécialité *</label>
@@ -72,7 +69,6 @@ async function submitAddMedecin() {
   const data = {
     nom:          document.getElementById('m-nom').value.trim(),
     prenom:       document.getElementById('m-prenom').value.trim(),
-    identifiant:  document.getElementById('m-id').value.trim().toUpperCase(),
     type,
     specialite:   document.getElementById('m-spec')?.value.trim() || null,
     telephone:    document.getElementById('m-tel').value.trim() || null,
@@ -80,8 +76,8 @@ async function submitAddMedecin() {
     date_naissance: document.getElementById('m-dob').value || null,
     adresse:      document.getElementById('m-adr').value.trim() || null,
   };
-  if (!data.nom || !data.prenom || !data.identifiant || !data.type) {
-    err.textContent = 'Nom, prénom, identifiant et type sont obligatoires.';
+  if (!data.nom || !data.prenom || !data.type) {
+    err.textContent = 'Nom, prénom et type sont obligatoires.';
     err.classList.remove('hidden'); return;
   }
   try {

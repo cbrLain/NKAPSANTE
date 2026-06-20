@@ -230,7 +230,6 @@ ul{list-style:none}
   display:flex;align-items:center;justify-content:space-between;
   padding:0 20px;position:sticky;top:0;z-index:50;
 }
-.btn-menu{display:none;background:none;font-size:22px;padding:4px;border:none;cursor:pointer;color:var(--text)}
 .page-title{font-size:1.2rem;font-weight:600;color:var(--text)}
 .top-date{font-size:.82rem;color:var(--text-muted)}
 .page-wrap{padding:20px;flex:1;display:flex;flex-direction:column;gap:20px;min-height:0}
@@ -386,13 +385,14 @@ ul{list-style:none}
 @media(max-width:768px){
   .sidebar{position:fixed;left:-100%;transition:left .25s ease;box-shadow:2px 0 12px rgba(0,0,0,.15)}
   .sidebar.mob-open{left:0}
-  .btn-menu{display:flex}
+  .btn-menu{display:flex!important}
   .page-wrap{padding:12px}
   .page-title{font-size:1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .stats-grid{grid-template-columns:1fr 1fr}
   .stat-val{font-size:1.2rem}
   .stat-ico{width:40px;height:40px;font-size:18px}
   .stat-card{padding:14px;gap:10px}
+}
 }
 @media(max-width:480px){
   .stats-grid{grid-template-columns:1fr}

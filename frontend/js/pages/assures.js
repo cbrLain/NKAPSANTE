@@ -37,7 +37,6 @@ function showAddAssure() {
       <div class="form-group"><label>Date de naissance</label><input id="a-dob" type="date"/></div>
       <div class="form-group"><label>Téléphone</label><input id="a-tel" placeholder="699000000"/></div>
     </div>
-    <div class="form-group"><label>N° de Sécurité Sociale *</label><input id="a-nss" placeholder="1-900101-001-23"/></div>
     <div class="form-group"><label>Adresse</label><input id="a-adr" placeholder="Yaoundé, Cameroun"/></div>
     <div class="form-group"><label>Email</label><input id="a-email" type="email" placeholder="contact@email.cm"/></div>
     <div id="a-err" class="alert alert-error hidden"></div>
@@ -53,14 +52,13 @@ async function submitAddAssure() {
   const data = {
     nom: document.getElementById('a-nom').value.trim(),
     prenom: document.getElementById('a-prenom').value.trim(),
-    numero_ss: document.getElementById('a-nss').value.trim(),
     date_naissance: document.getElementById('a-dob').value || null,
     telephone: document.getElementById('a-tel').value.trim() || null,
     adresse: document.getElementById('a-adr').value.trim() || null,
     email: document.getElementById('a-email').value.trim() || null,
   };
-  if (!data.nom || !data.prenom || !data.numero_ss) {
-    err.textContent = 'Nom, prénom et N° SS sont obligatoires.';
+  if (!data.nom || !data.prenom) {
+    err.textContent = 'Nom et prénom sont obligatoires.';
     err.classList.remove('hidden'); return;
   }
   try {

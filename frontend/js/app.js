@@ -58,28 +58,11 @@ function switchLandingTab(tab) {
   document.getElementById('ltab-' + tab).classList.add('active');
 }
 
-async function setRole(role) {
+function setRole(role) {
   document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
   document.querySelector(`.rtab[data-role="${role}"]`).classList.add('active');
   const creds = { assureur: ['assureur01','assureur123'], medecin: ['medecin01','medecin123'] };
-  document.getElementById('f-id').value = creds[role][0];
-  document.getElementById('f-pw').value = creds[role][1];
-  const errEl = document.getElementById('login-err');
-  const btnTx = document.querySelector('#btn-login .btn-text');
-  const btnSp = document.querySelector('#btn-login .btn-spinner');
-  errEl.classList.add('hidden');
-  btnTx.classList.add('hidden'); btnSp.classList.remove('hidden');
-  try {
-    const { token, user } = await Api.login(creds[role][0], creds[role][1]);
-    localStorage.setItem('ss_token', token);
-    localStorage.setItem('ss_user', JSON.stringify(user));
-    currentUser = user;
-    showApp(user);
-  } catch(err) {
-    errEl.textContent = err.message;
-    errEl.classList.remove('hidden');
-    btnTx.classList.remove('hidden'); btnSp.classList.add('hidden');
-  }
+  demo(creds[role][0], creds[role][1]);
 }
 
 // ── Déconnexion ───────────────────────────────────────────────
