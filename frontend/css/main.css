@@ -382,6 +382,7 @@ ul{list-style:none}
 .loader{text-align:center;padding:36px;color:var(--primary);font-size:.85rem}
 
 /* ── RESPONSIVE ───────────────────────────────────────── */
+.btn-menu{display:none;z-index:200}
 @media(max-width:768px){
   .sidebar{position:fixed;left:-100%;transition:left .25s ease;box-shadow:2px 0 12px rgba(0,0,0,.15)}
   .sidebar.mob-open{left:0}
@@ -392,7 +393,6 @@ ul{list-style:none}
   .stat-val{font-size:1.2rem}
   .stat-ico{width:40px;height:40px;font-size:18px}
   .stat-card{padding:14px;gap:10px}
-}
 }
 @media(max-width:480px){
   .stats-grid{grid-template-columns:1fr}
